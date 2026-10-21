@@ -9,6 +9,7 @@ swiftc -swift-version 5 -O -target arm64-apple-macos14.0 -framework AppKit -fram
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/Blank.hwpx "$app/Contents/Resources/"
 cp Resources/THIRD_PARTY_NOTICES.txt "$app/Contents/Resources/"
+cp LICENSE "$app/Contents/Resources/LICENSE.txt"
 rsync -a --delete .build/web/ "$app/Contents/Resources/Web/"
 codesign --force --sign - "$app"
 codesign --verify --strict "$app"
