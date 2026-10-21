@@ -12,11 +12,33 @@ Super Docs는 개인이 개발·관리하는 오픈소스 프로젝트입니다.
 
 - 관련 Issue와 합의한 변경 범위를 적어 주세요.
 - 현재 문제를 해결하는 최소한의 변경으로 유지해 주세요.
-- 변경에 맞는 검증을 실행하고 결과 및 미검증 항목을 적어 주세요. `npm ci`, `npm run build`, `npm test`, `bash scripts/test-native.sh`, `python3 tests/test-release.py`로 빌드·테스트할 수 있습니다. Apple Silicon Mac, macOS 14 이상, Xcode Command Line Tools, Node.js 24와 Google Chrome이 필요합니다.
+- 변경에 맞는 검증을 실행하고 결과 및 미검증 항목을 적어 주세요. `npm ci`, `npm run build`, `npm test`, `bash scripts/test-native.sh`, `python3 tests/release/test_release.py`로 빌드·테스트할 수 있습니다. Apple Silicon Mac, macOS 14 이상, Xcode Command Line Tools, Node.js 24와 Google Chrome이 필요합니다.
 - 원본 문서, 인증서, 비밀정보, 빌드 산출물은 커밋하지 마세요.
 - 새 의존성이나 리소스의 라이선스를 확인하고 필요한 고지를 유지해 주세요.
 
 코드 기여는 프로젝트의 MIT 라이선스로 제공됩니다. 병합 여부와 릴리스 일정은 관리자가 결정하며, 응답·수정 일정을 보장하지 않습니다.
+
+## 디렉토리와 책임
+
+- `Sources/SuperDocs/App/`: 앱 생명주기, macOS 메뉴, 업데이트 및 오류 표시.
+- `Sources/SuperDocs/Documents/`: 문서 열기 경로, 파일 상태·저장, 편집기와 창 사이의 최소 계약.
+- `Sources/SuperDocs/Windows/`: 공통 문서 창, 저장 패널, 변경 사항 확인.
+- `Sources/SuperDocs/Formats/HWP/`: HWP/HWPX 타입과 빈 문서 리소스 로딩.
+- `Sources/SuperDocs/Formats/DOCX/`: DOCX 타입.
+- `Sources/SuperDocs/Web/`: 로컬 자산 서버, 공통 WebKit 편집기와 클립보드 연결.
+- `web/hwp/`: RHWP Studio에 삽입하는 브리지, 붙여넣기 패치와 스타일. 독립 실행형 웹 앱이 아닙니다.
+- `web/docx/`, `scripts/docx/`, `tests/docx/`: DOCX 편집기 브리지·한국어 도구, 번들링·라이선스 수집, 저장 왕복 검증.
+- `Resources/HWP/`: HWP 전용 서식. 앱 아이콘·Info.plist·라이선스는 `Resources/`에 둡니다.
+- `scripts/hwp/`: 고정된 RHWP 소스 취득·패치·번들링 및 빈 문서 생성.
+- `tests/native/`, `tests/hwp/`, `tests/release/`: 네이티브 문서·서버, HWP 엔진·브라우저, 배포 테스트.
+
+`main.swift`는 앱 실행만 담당합니다. `DocumentOpener`가 형식별 편집기를 선택하고, `DocumentWindowController`는 `DocumentEditor`를 통해 편집기를 사용합니다. 파일 상태와 원자적 쓰기·외부 변경 검사는 `DocumentSession`이, 문서 직렬화와 RHWP 내부 호출은 `WebDocumentEditor`와 포맷별 웹 브리지가 담당합니다. 저장은 파일 쓰기와 편집기의 저장 완료 처리가 성공한 뒤 변경 상태를 해제합니다.
+
+Swift 파일은 주 타입 이름으로, 웹 파일과 빌드 스크립트는 기존의 소문자 하이픈 형식으로 명명합니다. `scripts/build-app.sh`는 Swift 하위 디렉토리를 재귀적으로 수집합니다. 빌드 산출물은 `.build/`와 `dist/`에만 둡니다.
+
+새 형식은 실제 구현 시 `Formats/` 아래에 추가하고 `DocumentOpener`에 연결합니다. 웹 엔진을 사용할 때만 `web/<형식>/`이 필요합니다. 아직 지원하지 않는 형식의 빈 폴더나 플러그인 체계는 만들지 않습니다. 보기 전용 지원은 해당 형식을 구현할 때 메뉴·저장 가능 여부와 함께 계약을 보완합니다.
+
+기존 명령 `npm run build`, `npm test`, `bash scripts/test-native.sh`는 그대로 사용합니다. 배포 테스트는 `python3 tests/release/test_release.py`, HWP 파일의 독립 포맷 검증은 `python3 tests/hwp/verify-files.py`입니다. 독립 포맷 검증에는 별도 개발 환경의 `olefile==0.47`이 필요하며, `npm test`가 생성한 파일을 검사합니다.
 
 ## 배포 빌드
 

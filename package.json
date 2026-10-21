@@ -7,12 +7,18 @@
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
     "build": "bash scripts/build-app.sh",
-    "test": "node scripts/test-engine.mjs && node scripts/test-editor.mjs",
-    "test:engine": "node scripts/test-engine.mjs",
-    "test:editor": "node scripts/test-editor.mjs"
+    "test": "node tests/hwp/engine.test.mjs && node tests/hwp/editor.test.mjs && node tests/docx/editor.test.mjs",
+    "test:engine": "node tests/hwp/engine.test.mjs",
+    "test:editor": "node tests/hwp/editor.test.mjs",
+    "test:docx": "node tests/docx/editor.test.mjs"
   },
   "dependencies": {
-    "@rhwp/core": "0.8.7"
+    "@docx-editor.dev/core": "2.32.0",
+    "@docx-editor.dev/fonts": "2.32.0",
+    "@docx-editor.dev/react": "2.32.0",
+    "@rhwp/core": "0.8.7",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@noble/hashes": "2.4.0",

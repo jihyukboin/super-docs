@@ -18,6 +18,7 @@
 <key>NSPrincipalClass</key><string>NSApplication</string>
 <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
 <key>CFBundleDocumentTypes</key><array>
+<dict><key>CFBundleTypeName</key><string>Word Document</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Alternate</string><key>LSItemContentTypes</key><array><string>org.openxmlformats.wordprocessingml.document</string></array></dict>
 <dict><key>CFBundleTypeName</key><string>HWP Document</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Alternate</string><key>LSItemContentTypes</key><array><string>tech.superdocs.hwp</string></array></dict>
 <dict><key>CFBundleTypeName</key><string>HWPX Document</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Alternate</string><key>LSItemContentTypes</key><array><string>tech.superdocs.hwpx</string></array></dict>
 </array>

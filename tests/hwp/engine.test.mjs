@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import init, { HwpDocument } from '@rhwp/core';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-await init({ module_or_path: await readFile(new URL('../node_modules/@rhwp/core/rhwp_bg.wasm', import.meta.url)) });
-const out = new URL('../.build/verification/', import.meta.url); await mkdir(out, { recursive: true });
+await init({ module_or_path: await readFile(new URL('../../node_modules/@rhwp/core/rhwp_bg.wasm', import.meta.url)) });
+const out = new URL('../../.build/verification/', import.meta.url); await mkdir(out, { recursive: true });
 const expected = '슈퍼독스 HWP·HWPX 편집 검증 ABC 123';
 const doc = HwpDocument.createEmpty(); doc.createBlankDocument();
 assert.equal(JSON.parse(doc.insertText(0, 0, 0, expected)).ok, true);

@@ -33,7 +33,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - run: python3 tests/test-release.py
+      - run: python3 tests/release/test_release.py
       - run: npm run build
       - run: npm test
       - run: bash scripts/test-native.sh

@@ -4,7 +4,7 @@
   <a href="https://github.com/jihyukboin/super-docs/releases"><img src="https://raw.githubusercontent.com/jihyukboin/super-docs/main/Resources/icon_256x256.png" width="120" alt="Super Docs"></a>
 </p>
 
-Mac에서 HWP·HWPX 문서를 열고 편집하고 저장하는 무료 오픈소스 앱입니다.
+Mac에서 HWP·HWPX·DOCX 문서를 열고 편집하고 저장하는 무료 오픈소스 앱입니다.
 
 ## 지원 환경
 
@@ -19,10 +19,10 @@ Mac에서 HWP·HWPX 문서를 열고 편집하고 저장하는 무료 오픈소�
 
 ## 사용법
 
-- **파일 → 열기** (`⌘O`): HWP·HWPX 문서 열기
+- **파일 → 열기** (`⌘O`): HWP·HWPX·DOCX 문서 열기
 - **파일 → 새 문서** (`⌘N`): 새 문서 만들기
 - **저장** (`⌘S`): 편집한 문서 저장
-- **다른 이름으로 저장** (`⇧⌘S`): 파일 이름과 HWP·HWPX 형식을 선택해 저장
+- **다른 이름으로 저장** (`⇧⌘S`): 파일 이름과 저장 형식 선택 (HWP/HWPX 간 변환, DOCX는 DOCX로 저장)
 
 본문·표·서식을 편집하고 여러 문서를 각각의 창에서 열 수 있습니다. 문서 편집에는 인터넷 연결이 필요하지 않습니다.
 
@@ -34,7 +34,7 @@ Mac에서 HWP·HWPX 문서를 열고 편집하고 저장하는 무료 오픈소�
 
 ## 알아두세요
 
-복잡한 문서의 배치·글꼴·일부 개체는 한컴 앱과 다르게 표시될 수 있습니다. 암호 문서의 저장은 지원하지 않습니다. 중요한 문서는 원본을 보관하고 복사본으로 작업해 주세요.
+복잡한 문서의 배치·글꼴·일부 개체는 한컴 앱이나 Microsoft Word와 다르게 표시될 수 있습니다. DOCX의 기본 본문·서식·표 편집을 지원하며, 변경 내용 추적과 메모 편집은 지원하지 않습니다. 암호 문서의 저장은 지원하지 않습니다. 중요한 문서는 원본을 보관하고 복사본으로 작업해 주세요.
 
 ## 문제 신고와 기능 제안
 
@@ -42,4 +42,4 @@ Mac에서 HWP·HWPX 문서를 열고 편집하고 저장하는 무료 오픈소�
 
 ## 오픈소스
 
-[RHWP](https://github.com/edwardkim/rhwp) 기반의 독립적인 앱입니다. Super Docs는 [MIT 라이선스](LICENSE)로 공개하며, 포함된 오픈소스의 고지는 [여기](Resources/THIRD_PARTY_NOTICES.txt)에서 확인할 수 있습니다. 코드 기여는 [기여 안내](CONTRIBUTING.md)를 참고해 주세요.
+[RHWP](https://github.com/edwardkim/rhwp)와 [DOCX Editor](https://github.com/eigenpal/docx-editor) 기반의 독립적인 앱입니다. Super Docs는 [MIT 라이선스](LICENSE)로 공개하며, 포함된 오픈소스의 고지는 [여기](Resources/THIRD_PARTY_NOTICES.txt)에서 확인할 수 있습니다. 코드 기여는 [기여 안내](CONTRIBUTING.md)를 참고해 주세요.

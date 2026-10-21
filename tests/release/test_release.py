@@ -7,7 +7,7 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-SCRIPT = Path(__file__).resolve().parents[1] / 'scripts/prepare-release.py'
+SCRIPT = Path(__file__).resolve().parents[2] / 'scripts/prepare-release.py'
 
 class ReleaseVersionTests(unittest.TestCase):
     def run_version(self, main='merged-sha', published='previous-sha', drafts=None, tag='v0.1.0'):

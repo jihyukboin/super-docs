@@ -1,0 +1,7 @@
+html, body { margin: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+body { display: flex; flex-direction: column; background: #252525; }
+#root { flex: 1; min-height: 0; }
+#super-docs-status { padding: 7px 16px; color: #bdbdbd; background: #252525; font-size: 11px; }
+button, input, select { font-family: inherit; }
+/* Review requires a separate module; do not advertise it in the editing toolbar. */
+button[aria-label="Comments & Changes"] { display: none; }

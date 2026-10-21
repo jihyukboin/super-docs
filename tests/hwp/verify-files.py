@@ -9,7 +9,7 @@ import zlib
 import xml.etree.ElementTree as ET
 import olefile
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / '.build/verification'
 
 def read_text(path):
