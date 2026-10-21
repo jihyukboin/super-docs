@@ -1,6 +1,7 @@
 import AppKit
 import WebKit
 import UniformTypeIdentifiers
+import Sparkle
 
 let hwpType = UTType(importedAs: "tech.superdocs.hwp", conformingTo: .data)
 let hwpxType = UTType(importedAs: "tech.superdocs.hwpx", conformingTo: .data)
@@ -9,6 +10,7 @@ final class SuperDocsApp: NSObject, NSApplicationDelegate {
     var server: AssetServer!
     var documents: [EditorWindow] = []
     var terminating = false
+    private let updaterController = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
@@ -17,6 +19,7 @@ final class SuperDocsApp: NSObject, NSApplicationDelegate {
         catch { showError(error); NSApp.terminate(nil) }
     }
     func applicationDidFinishLaunching(_ notification: Notification) {
+        updaterController.startUpdater()
         if documents.isEmpty { newDocument(nil) }
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -77,7 +80,7 @@ final class SuperDocsApp: NSObject, NSApplicationDelegate {
         current?.command(id)
     }
     @objc func about(_ sender: Any?) {
-        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Super Docs", .applicationVersion: "0.1.0", .credits: NSAttributedString(string: "HWP · HWPX 문서 편집기\nRHWP 0.8.7 (MIT)\n본 제품은 한글 문서 파일 공개 문서를 참고한 독립적인 앱입니다.")])
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Super Docs", .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "", .credits: NSAttributedString(string: "HWP · HWPX 문서 편집기\nRHWP 0.8.7 (MIT)\n본 제품은 한글 문서 파일 공개 문서를 참고한 독립적인 앱입니다.")])
     }
     @objc func licenses(_ sender: Any?) {
         if let url = Bundle.main.url(forResource: "THIRD_PARTY_NOTICES", withExtension: "txt") { NSWorkspace.shared.open(url) }
@@ -96,6 +99,9 @@ final class SuperDocsApp: NSObject, NSApplicationDelegate {
         }
         let app = submenu("Super Docs")
         item(app, "Super Docs 정보", #selector(about)); item(app, "오픈소스 라이선스", #selector(licenses))
+        let checkForUpdates = NSMenuItem(title: "업데이트 확인…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
+        checkForUpdates.target = updaterController
+        app.addItem(checkForUpdates)
         app.addItem(.separator()); app.addItem(withTitle: "Super Docs 가리기", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         app.addItem(.separator()); app.addItem(withTitle: "Super Docs 종료", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         let file = submenu("파일")
