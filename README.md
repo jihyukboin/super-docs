@@ -1,15 +1,47 @@
-# Super Docs
-
 <p align="center">
-  <a href="https://github.com/jihyukboin/super-docs/releases"><img src="https://raw.githubusercontent.com/jihyukboin/super-docs/main/Resources/icon_256x256.png" width="120" alt="Super Docs"></a>
+  <a href="https://github.com/jihyukboin/super-docs/releases/latest">
+    <img src="Resources/icon_256x256.png" width="120" alt="Super Docs 아이콘">
+  </a>
 </p>
 
-Mac에서 HWP·HWPX·DOCX 문서를 열고 편집하고 저장하는 무료 오픈소스 앱입니다.
+<h1 align="center">Super Docs</h1>
 
-## 지원 환경
+<p align="center">
+  <strong>Mac에서 한글 문서와 Word 문서를 함께.</strong><br>
+  HWP · HWPX · DOCX를 열고, 편집하고, 저장하는 무료 오픈소스 문서 편집기
+</p>
 
-- Apple Silicon Mac (M1 이상)
-- macOS 14 이상
+<p align="center">
+  <a href="https://github.com/jihyukboin/super-docs/releases/latest"><img src="https://img.shields.io/github/v/release/jihyukboin/super-docs?label=download&color=6366f1" alt="최신 릴리스 다운로드"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-333333?logo=apple&logoColor=white" alt="macOS 14 이상">
+  <img src="https://img.shields.io/badge/Apple_Silicon-M1%2B-333333" alt="Apple Silicon M1 이상">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563eb" alt="MIT 라이선스"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/jihyukboin/super-docs/releases/latest"><strong>다운로드</strong></a> ·
+  <a href="https://jihyuk.tech/super-docs">웹사이트 (준비 중)</a> ·
+  <a href="#사용법">사용법</a> ·
+  <a href="https://github.com/jihyukboin/super-docs/issues">문제 신고 · 기능 제안</a>
+</p>
+
+## 주요 기능
+
+- **세 가지 문서 형식** — HWP·HWPX·DOCX의 본문, 표, 글자 서식을 편집합니다.
+- **오프라인 편집** — 문서 편집에 인터넷 연결이 필요하지 않습니다.
+- **Mac에 익숙한 작업 흐름** — 여러 문서를 각각의 창에서 열고, 시스템 파일 선택창과 단축키로 작업합니다.
+- **안전한 저장 흐름** — 저장하지 않은 변경 사항을 알리고, 다른 앱이 원본을 변경하면 덮어쓰기를 막습니다.
+- **앱 내 업데이트** — 새 버전을 확인하고 설치를 안내합니다.
+
+## 지원 형식과 환경
+
+| 형식 | 열람 · 편집 | 저장 |
+| --- | --- | --- |
+| HWP | 지원 | HWP 또는 HWPX |
+| HWPX | 지원 | HWPX 또는 HWP |
+| DOCX | 지원 | DOCX |
+
+**Apple Silicon Mac (M1 이상) · macOS 14 이상**에서 사용할 수 있습니다. 새 문서는 HWPX로 시작합니다. 형식별 제약은 [알아두세요](#알아두세요)를 확인해 주세요.
 
 ## 설치
 
