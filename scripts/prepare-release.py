@@ -3,6 +3,10 @@ import json
 import os
 import re
 import subprocess
+import runpy
+from pathlib import Path
+
+scope = runpy.run_path(str(Path(__file__).with_name("change-scope.py")))
 
 def api(path):
     return json.loads(subprocess.check_output(['gh', 'api', f'repos/{os.environ["GITHUB_REPOSITORY"]}/{path}']))
@@ -13,6 +17,9 @@ main = api('commits/main')['sha']
 skip = main != sha or latest['target_commitish'] == sha
 if skip:
     print('Skipping an already published or superseded merge.')
+    outputs = {'skip': 'true'}
+elif scope['documentation_only'](scope['changed_paths'](latest['tag_name'], sha)):
+    print('Documentation-only changes since the latest release; no app release needed.')
     outputs = {'skip': 'true'}
 else:
     match = re.fullmatch(r'v(\d+)\.(\d+)\.(\d+)', latest['tag_name'])

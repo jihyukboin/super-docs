@@ -13,10 +13,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app_changed: ${{ steps.scope.outputs.app_changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -z "$BASE_SHA" ]; then
+            echo 'app_changed=true' >> "$GITHUB_OUTPUT"
+          else
+            python3 scripts/change-scope.py "$BASE_SHA" HEAD
+          fi
   build-and-test:
-    runs-on: macos-15
+    needs: changes
+    if: ${{ always() }}
+    runs-on: ${{ needs.changes.outputs.app_changed == 'false' && 'ubuntu-latest' || 'macos-15' }}
     timeout-minutes: 20
     steps:
+      - name: Require successful scope detection
+        env:
+          RESULT: ${{ needs.changes.result }}
+        run: test "$RESULT" = success
       - name: Require dev as the release source
         if: github.event_name == 'pull_request' && github.base_ref == 'main'
         env:
@@ -28,12 +52,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Validate change classification
+        run: python3 tests/release/test_change_scope.py
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: needs.changes.outputs.app_changed != 'false'
         with:
           node-version: '24'
           cache: npm
-      - run: npm ci
+      - run: npm ci --no-audit --no-fund
+        if: needs.changes.outputs.app_changed != 'false'
       - run: python3 tests/release/test_release.py
       - run: npm run build
+        if: needs.changes.outputs.app_changed != 'false'
       - run: npm test
+        if: needs.changes.outputs.app_changed != 'false'
       - run: bash scripts/test-native.sh
+        if: needs.changes.outputs.app_changed != 'false'

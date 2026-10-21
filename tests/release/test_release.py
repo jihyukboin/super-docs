@@ -10,9 +10,11 @@ from unittest.mock import patch
 SCRIPT = Path(__file__).resolve().parents[2] / 'scripts/prepare-release.py'
 
 class ReleaseVersionTests(unittest.TestCase):
-    def run_version(self, main='merged-sha', published='previous-sha', drafts=None, tag='v0.1.0'):
+    def run_version(self, main='merged-sha', published='previous-sha', drafts=None, tag='v0.1.0', files=None):
         latest = {'tag_name': tag, 'target_commitish': published}
         def gh(command):
+            if command[0] == 'git':
+                return ('\0'.join(files if files is not None else ['Sources/SuperDocs/main.swift']) + '\0').encode()
             path = command[-1]
             if path.endswith('/commits/main'):
                 result = {'sha': main}
@@ -30,6 +32,12 @@ class ReleaseVersionTests(unittest.TestCase):
 
     def test_next_patch(self):
         self.assertEqual(self.run_version(), {'skip': 'false', 'version': '0.1.1', 'tag': 'v0.1.1'})
+
+    def test_documentation_only_does_not_release(self):
+        self.assertEqual(self.run_version(files=['README.md', 'CONTRIBUTING.md']), {'skip': 'true'})
+
+    def test_packaged_license_still_releases(self):
+        self.assertEqual(self.run_version(files=['LICENSE'])['skip'], 'false')
 
     def test_already_published_is_noop(self):
         self.assertEqual(self.run_version(published='merged-sha'), {'skip': 'true'})

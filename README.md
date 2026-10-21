@@ -20,7 +20,7 @@
 
 <p align="center">
   <a href="https://github.com/jihyukboin/super-docs/releases/latest"><strong>다운로드</strong></a> ·
-  <a href="https://jihyuk.tech/super-docs">웹사이트 (준비 중)</a> ·
+  <a href="https://jihyuk.tech/super-docs">웹사이트</a> ·
   <a href="#사용법">사용법</a> ·
   <a href="https://github.com/jihyukboin/super-docs/issues">문제 신고 · 기능 제안</a>
 </p>
