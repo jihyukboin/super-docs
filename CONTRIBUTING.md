@@ -23,14 +23,16 @@ Super Docs는 개인이 개발·관리하는 오픈소스 프로젝트입니다.
 - `Sources/SuperDocs/App/`: 앱 생명주기, macOS 메뉴, 업데이트 및 오류 표시.
 - `Sources/SuperDocs/Documents/`: 문서 열기 경로, 파일 상태·저장, 편집기와 창 사이의 최소 계약.
 - `Sources/SuperDocs/Windows/`: 공통 문서 창, 저장 패널, 변경 사항 확인.
-- `Sources/SuperDocs/Formats/HWP/`: HWP/HWPX 타입과 RHWP 편집기 구현.
-- `Sources/SuperDocs/Web/`: 로컬 자산 서버와 WebKit 클립보드 연결.
+- `Sources/SuperDocs/Formats/HWP/`: HWP/HWPX 타입과 빈 문서 리소스 로딩.
+- `Sources/SuperDocs/Formats/DOCX/`: DOCX 타입.
+- `Sources/SuperDocs/Web/`: 로컬 자산 서버, 공통 WebKit 편집기와 클립보드 연결.
 - `web/hwp/`: RHWP Studio에 삽입하는 브리지, 붙여넣기 패치와 스타일. 독립 실행형 웹 앱이 아닙니다.
+- `web/docx/`, `scripts/docx/`, `tests/docx/`: DOCX 편집기 브리지·한국어 도구, 번들링·라이선스 수집, 저장 왕복 검증.
 - `Resources/HWP/`: HWP 전용 서식. 앱 아이콘·Info.plist·라이선스는 `Resources/`에 둡니다.
 - `scripts/hwp/`: 고정된 RHWP 소스 취득·패치·번들링 및 빈 문서 생성.
 - `tests/native/`, `tests/hwp/`, `tests/release/`: 네이티브 문서·서버, HWP 엔진·브라우저, 배포 테스트.
 
-`main.swift`는 앱 실행만 담당합니다. `DocumentOpener`가 형식별 편집기를 선택하고, `DocumentWindowController`는 `DocumentEditor`를 통해 편집기를 사용합니다. 파일 상태와 원자적 쓰기·외부 변경 검사는 `DocumentSession`이, 문서 직렬화와 RHWP 내부 호출은 `HWPEditor`가 담당합니다. 저장은 파일 쓰기와 편집기의 저장 완료 처리가 성공한 뒤 변경 상태를 해제합니다.
+`main.swift`는 앱 실행만 담당합니다. `DocumentOpener`가 형식별 편집기를 선택하고, `DocumentWindowController`는 `DocumentEditor`를 통해 편집기를 사용합니다. 파일 상태와 원자적 쓰기·외부 변경 검사는 `DocumentSession`이, 문서 직렬화와 RHWP 내부 호출은 `WebDocumentEditor`와 포맷별 웹 브리지가 담당합니다. 저장은 파일 쓰기와 편집기의 저장 완료 처리가 성공한 뒤 변경 상태를 해제합니다.
 
 Swift 파일은 주 타입 이름으로, 웹 파일과 빌드 스크립트는 기존의 소문자 하이픈 형식으로 명명합니다. `scripts/build-app.sh`는 Swift 하위 디렉토리를 재귀적으로 수집합니다. 빌드 산출물은 `.build/`와 `dist/`에만 둡니다.
 

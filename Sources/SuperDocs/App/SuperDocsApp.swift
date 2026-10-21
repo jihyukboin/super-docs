@@ -71,7 +71,7 @@ final class SuperDocsApp: NSObject, NSApplicationDelegate {
         current?.command(id)
     }
     @objc func about(_ sender: Any?) {
-        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Super Docs", .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "", .credits: NSAttributedString(string: "HWP · HWPX 문서 편집기\nRHWP 0.8.7 (MIT)\n본 제품은 한글 문서 파일 공개 문서를 참고한 독립적인 앱입니다.")])
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Super Docs", .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "", .credits: NSAttributedString(string: "HWP · HWPX · DOCX 문서 편집기\nRHWP 0.8.7 (MIT) · DOCX Editor 2.32.0 (Apache-2.0)\n본 제품은 한글 문서 파일 공개 문서를 참고한 독립적인 앱입니다.")])
     }
     @objc func licenses(_ sender: Any?) {
         if let url = Bundle.main.url(forResource: "THIRD_PARTY_NOTICES", withExtension: "txt") { NSWorkspace.shared.open(url) }

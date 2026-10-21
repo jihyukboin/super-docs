@@ -1,13 +1,14 @@
 import AppKit
 import WebKit
 
-final class HWPEditor: NSObject, DocumentEditor, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
+final class WebDocumentEditor: NSObject, DocumentEditor, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
     private let baseURL: URL
     private let webView: WKWebView
     private let clipboard: WebClipboardBridge
     var view: NSView { webView }
-    var saveFormats: [DocumentFormat] { HWPFormat.formats }
-    var defaultFormat: DocumentFormat { HWPFormat.hwpx }
+    let saveFormats: [DocumentFormat]
+    var defaultFormat: DocumentFormat { saveFormats[0] }
+    private let entryPath: String
     var onReady: (() -> Void)?
     var onChange: (() -> Void)?
     var onOpen: (() -> Void)?
@@ -15,7 +16,9 @@ final class HWPEditor: NSObject, DocumentEditor, WKScriptMessageHandler, WKNavig
     var onError: ((Error) -> Void)?
     var onTermination: (() -> Void)?
 
-    init(baseURL: URL) throws {
+    init(baseURL: URL, entryPath: String = "", formats: [DocumentFormat] = HWPFormat.formats) throws {
+        self.entryPath = entryPath
+        self.saveFormats = formats
         self.baseURL = baseURL
         clipboard = WebClipboardBridge(baseURL: baseURL)
         let config = WKWebViewConfiguration()
@@ -59,7 +62,7 @@ final class HWPEditor: NSObject, DocumentEditor, WKScriptMessageHandler, WKNavig
     }
 
     func start() {
-        var parts = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!
+        var parts = URLComponents(url: entryPath.isEmpty ? baseURL : baseURL.appendingPathComponent(entryPath), resolvingAgainstBaseURL: false)!
         parts.queryItems = [URLQueryItem(name: "chrome", value: "embed"), URLQueryItem(name: "lang", value: "ko"), URLQueryItem(name: "renderer", value: "canvas2d")]
         webView.load(URLRequest(url: parts.url!))
     }
