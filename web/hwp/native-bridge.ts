@@ -2,6 +2,38 @@
 function postNative(type: string, payload: Record<string, unknown> = {}) {
   (window as any).webkit?.messageHandlers?.superDocs?.postMessage({ type, ...payload });
 }
+// Keep native file actions in the editor's menu row.
+if ((window as any).webkit?.messageHandlers?.superDocs) {
+  document.documentElement.dataset.superDocs = '';
+  setThemeMode('dark');
+  const themeMenu = document.querySelector('[data-theme-mode-choice]')?.closest('.md-sub');
+  if (themeMenu?.previousElementSibling?.classList.contains('md-sep')) themeMenu.previousElementSibling.remove();
+  themeMenu?.remove();
+  const menu = document.getElementById('menu-bar');
+  if (menu) {
+    const actions = document.createElement('div');
+    actions.className = 'super-docs-file-actions';
+    actions.setAttribute('role', 'group');
+    actions.setAttribute('aria-label', '문서 파일');
+    for (const [type, title, shortcut] of [['open', '열기', '⌘O'], ['save', '저장', '⌘S']]) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = title;
+      button.title = `${title} (${shortcut})`;
+      button.addEventListener('mousedown', event => event.preventDefault());
+      button.addEventListener('click', () => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        postNative(type);
+      });
+      actions.append(button);
+    }
+    const status = document.createElement('span');
+    status.id = 'super-docs-status';
+    status.setAttribute('role', 'status');
+    status.textContent = '편집기 준비 중…';
+    menu.append(actions, status);
+  }
+}
 function bytesToBase64(bytes: Uint8Array): string {
   let result = '';
   for (let i = 0; i < bytes.length; i += 32768) result += String.fromCharCode(...bytes.subarray(i, i + 32768));

@@ -7,9 +7,9 @@
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
     "build": "bash scripts/build-app.sh",
-    "test": "node scripts/test-engine.mjs && node scripts/test-editor.mjs",
-    "test:engine": "node scripts/test-engine.mjs",
-    "test:editor": "node scripts/test-editor.mjs"
+    "test": "node tests/hwp/engine.test.mjs && node tests/hwp/editor.test.mjs",
+    "test:engine": "node tests/hwp/engine.test.mjs",
+    "test:editor": "node tests/hwp/editor.test.mjs"
   },
   "dependencies": {
     "@rhwp/core": "0.8.7"

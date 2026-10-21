@@ -1,0 +1,22 @@
+/* AppKit sets the editor's semantic color tokens directly. */
+:root[data-super-docs][data-theme-effective="dark"] {
+  --ui-hover: rgba(255, 255, 255, 0.08);
+  --ui-hover-strong: rgba(255, 255, 255, 0.12);
+  --ui-menu-open: var(--ui-hover);
+  --ui-menu-open-border: transparent;
+  --ui-accent-bg: var(--ui-hover);
+  --ui-accent-bg-light: var(--ui-hover-strong);
+  --ui-warning-bg: #373020;
+  --ui-danger-soft: rgba(255, 69, 58, 0.18);
+  --ui-focus-soft: rgba(10, 132, 255, 0.25);
+}
+
+[data-super-docs] .menu-item.open > .menu-title {
+  color: var(--ui-text);
+}
+
+[data-super-docs] .md-item:hover:not(.disabled),
+[data-super-docs] .md-item.active:not(.disabled),
+[data-super-docs] .md-sub:hover:not(.disabled) {
+  color: var(--ui-text-on-accent);
+}
