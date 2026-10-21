@@ -20,7 +20,7 @@ Super Docs는 개인이 개발·관리하는 오픈소스 프로젝트입니다.
 
 ## 배포 빌드
 
-Developer ID Application 인증서와 개인키, 검증된 `notarytool` 키체인 프로필이 필요합니다. 다음 명령은 앱과 DMG의 서명·공증·티켓 부착 및 Gatekeeper 검증을 수행합니다. 결과는 `dist/release/<버전>/`에 생성되며 자동 업로드하지 않습니다.
+Developer ID Application 인증서와 개인키, 검증된 `notarytool` 키체인 프로필이 필요합니다. 다음 명령은 앱과 DMG의 빌드·서명·공증·티켓 부착 및 Gatekeeper 검증을 수행합니다. 결과는 `dist/release/<버전>/`에 생성되며 자동 업로드하지 않습니다. 로컬 배포 전에는 위 빌드·테스트를 먼저 실행하세요.
 
 ```sh
 SIGNING_IDENTITY='Developer ID Application: Your Name (TEAMID)' \
@@ -48,5 +48,11 @@ GitHub repository Secrets:
 - `SPARKLE_PRIVATE_KEY`: `SUPublicEDKey`와 짝을 이루는 EdDSA 키
 
 작업은 임시 키체인을 만들고 마지막 단계에서 키체인과 임시 키 파일을 삭제합니다. Sparkle 2.10.0 배포 파일의 SHA-256은 빌드 스크립트에 고정되어 있습니다. 프레임워크를 올릴 때 체크섬과 라이선스도 함께 갱신하세요. 기존 사용자에게 업데이트를 제공하려면 EdDSA 키를 유지해야 합니다.
+
+CI는 `dev` 또는 `main`으로 향하는 PR에서 한 번 실행하며 새 커밋이 올라오면 이전 실행을 취소합니다. 기능 기여 PR은 `dev`를 대상으로 해 주세요. `main` PR은 같은 저장소의 `dev`만 허용합니다. 배포 단계에서는 이미 통과한 테스트를 반복하지 않고 서명·공증·Gatekeeper·업데이트 서명과 공개 파일 검사를 수행합니다.
+
+`main` 보호 규칙은 [.github/main-protection.json](.github/main-protection.json)에 기록합니다. 최신 `main` 기준 CI 통과와 PR 병합, 대화 해결을 요구하고 관리자에게도 적용합니다. 강제 푸시·삭제는 금지하며, 1인 운영을 위해 다른 사람의 승인 수는 0입니다. `build-and-test`는 GitHub Actions가 제공한 검사만 인정합니다.
+
+Apple CloudKit 연결 오류(68)는 티켓 부착 때 제한적으로 재시도합니다. `stapler validate`도 서버에 접속하므로 중복 호출하지 않습니다. 잘못되었거나 취소된 티켓은 재시도로 무시하지 않습니다.
 
 참고: [Sparkle 설정](https://sparkle-project.org/documentation/), [프로그램에서 초기화](https://sparkle-project.org/documentation/programmatic-setup/), [내부 도구 서명](https://sparkle-project.org/documentation/sandboxing/), [GitHub PR 병합 이벤트](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#running-your-pull_request-workflow-when-a-pull-request-merges).

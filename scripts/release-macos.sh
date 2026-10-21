@@ -11,18 +11,13 @@ notary_options=(--keychain-profile "$NOTARY_PROFILE")
 if [ -n "${NOTARY_KEYCHAIN:-}" ]; then notary_options+=(--keychain "$NOTARY_KEYCHAIN"); fi
 xcrun notarytool history "${notary_options[@]}" --output-format json >/dev/null
 npm run build
-python3 tests/test-release.py
-npm test
-bash scripts/test-native.sh
 
 app="$PWD/dist/Super Docs.app"
 version=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$app/Contents/Info.plist")
 release="$PWD/dist/release/$version"
 mkdir -p "$release"
 stage=$(mktemp -d "$PWD/.build/dmg-stage.XXXXXX")
-mountpoint=""
 cleanup() {
-  if [ -n "$mountpoint" ]; then hdiutil detach "$mountpoint" >/dev/null || true; fi
   rm -rf "$stage"
 }
 trap cleanup EXIT
@@ -63,16 +58,6 @@ notarize "$dmg" "$release/dmg-notarization.json"
 bash scripts/staple.sh "$dmg"
 codesign --verify --strict --verbose=2 "$dmg"
 spctl --assess --type open --context context:primary-signature --verbose=2 "$dmg"
-hdiutil verify "$dmg"
-
-mountpoint="$stage/mounted"
-mkdir "$mountpoint"
-hdiutil attach -readonly -nobrowse -mountpoint "$mountpoint" "$dmg"
-codesign --verify --deep --strict --verbose=2 "$mountpoint/Super Docs.app"
-bash scripts/staple.sh "$mountpoint/Super Docs.app" validate
-spctl --assess --type execute --verbose=2 "$mountpoint/Super Docs.app"
-hdiutil detach "$mountpoint"
-mountpoint=""
 (
   cd "$release"
   shasum -a 256 "$(basename "$dmg")" >"$(basename "$dmg").sha256"
