@@ -59,26 +59,12 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: needs.changes.outputs.app_changed != 'false'
-        with:
-          path: |
-            .build/sparkle
-            .build/upstream/rhwp
-          key: vendor-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/setup-sparkle.sh', 'scripts/hwp/build.mjs', 'package-lock.json') }}
       - run: npm ci --no-audit --no-fund
         if: needs.changes.outputs.app_changed != 'false'
       - run: python3 tests/release/test_release.py
       - run: npm run build
         if: needs.changes.outputs.app_changed != 'false'
-      - name: Run editor and native checks
+      - run: npm test
         if: needs.changes.outputs.app_changed != 'false'
-        run: |
-          npm test &
-          editor_pid=$!
-          bash scripts/test-native.sh &
-          native_pid=$!
-          result=0
-          wait "$editor_pid" || result=1
-          wait "$native_pid" || result=1
-          exit "$result"
+      - run: bash scripts/test-native.sh
+        if: needs.changes.outputs.app_changed != 'false'
