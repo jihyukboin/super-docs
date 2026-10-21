@@ -56,7 +56,7 @@ bash scripts/release-macos.sh
 ## dev → main 자동 배포
 
 1. `dev`에서 작업하고 CI를 통과한 뒤 같은 저장소의 `dev → main` PR을 병합합니다.
-2. `Release macOS`가 병합 커밋을 빌드하고, 최신 공개 태그의 패치 버전을 하나 올립니다. `CFBundleVersion`과 표시 버전에 같은 버전을 넣습니다. 소스의 `package.json` 버전은 로컬 빌드의 기본값입니다.
+2. `Release macOS`는 Linux에서 최신 공개 태그 이후의 변경을 확인합니다. 문서만 바뀌었다면 macOS 작업과 새 릴리스를 생략합니다. 앱 변경이 있으면 병합 커밋을 빌드하고, 최신 공개 태그의 패치 버전을 하나 올립니다. `CFBundleVersion`과 표시 버전에 같은 버전을 넣습니다. 소스의 `package.json` 버전은 로컬 빌드의 기본값입니다.
 3. Sparkle 프레임워크 내부 도구부터 앱까지 Developer ID로 서명하고, 앱·DMG를 Apple에 공증 제출합니다. 티켓·Gatekeeper 검사 후 DMG의 Sparkle EdDSA 서명과 `appcast.xml`을 생성합니다.
 4. DMG·SHA-256·appcast를 초안 릴리스에 업로드한 뒤 모두 준비되면 공개합니다. 앱은 `https://github.com/jihyukboin/super-docs/releases/latest/download/appcast.xml`에서 업데이트를 확인합니다.
 
@@ -78,3 +78,9 @@ CI는 `dev` 또는 `main`으로 향하는 PR에서 한 번 실행하며 새 커�
 Apple CloudKit 연결 오류(68)는 티켓 부착 때 제한적으로 재시도합니다. `stapler validate`도 서버에 접속하므로 중복 호출하지 않습니다. 잘못되었거나 취소된 티켓은 재시도로 무시하지 않습니다.
 
 참고: [Sparkle 설정](https://sparkle-project.org/documentation/), [프로그램에서 초기화](https://sparkle-project.org/documentation/programmatic-setup/), [내부 도구 서명](https://sparkle-project.org/documentation/sandboxing/), [GitHub PR 병합 이벤트](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#running-your-pull_request-workflow-when-a-pull-request-merges).
+
+### CI 실행 시간
+
+문서 전용 변경은 Linux에서 분류·배포 정책 테스트를 실행하고 동일한 필수 검사 이름 `build-and-test`로 결과를 보고합니다. `README.md`, `CONTRIBUTING.md`, `AGENTS.md`, Issue/PR 템플릿, `docs/*.md`만 예외입니다. 앱에 포함되는 라이선스·리소스, 코드·의존성·워크플로·테스트 변경과 알 수 없는 파일은 전체 macOS 검증을 실행합니다. 분류 실패는 필수 검사 실패로 처리하며, 수동 CI는 항상 전체 검증합니다.
+
+macOS CI는 고정 버전 Sparkle과 RHWP 소스를 캐시하고, 빌드 이후 편집기 테스트와 네이티브 테스트를 병렬로 실행합니다. 두 테스트 중 하나라도 실패하면 검사가 실패합니다. 캐시는 PR 병합 참조에 속하므로 다른 PR이나 배포에서 재사용된다고 가정하지 않습니다. 서명 키와 빌드 산출물은 캐시하지 않습니다. 배포의 앱·DMG 공증, 티켓 부착, Gatekeeper 및 Sparkle 서명 검증은 유지합니다.

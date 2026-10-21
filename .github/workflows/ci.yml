@@ -13,10 +13,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app_changed: ${{ steps.scope.outputs.app_changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -z "$BASE_SHA" ]; then
+            echo 'app_changed=true' >> "$GITHUB_OUTPUT"
+          else
+            python3 scripts/change-scope.py "$BASE_SHA" HEAD
+          fi
   build-and-test:
-    runs-on: macos-15
+    needs: changes
+    if: ${{ always() }}
+    runs-on: ${{ needs.changes.outputs.app_changed == 'false' && 'ubuntu-latest' || 'macos-15' }}
     timeout-minutes: 20
     steps:
+      - name: Require successful scope detection
+        env:
+          RESULT: ${{ needs.changes.result }}
+        run: test "$RESULT" = success
       - name: Require dev as the release source
         if: github.event_name == 'pull_request' && github.base_ref == 'main'
         env:
@@ -28,12 +52,33 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Validate change classification
+        run: python3 tests/release/test_change_scope.py
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: needs.changes.outputs.app_changed != 'false'
         with:
           node-version: '24'
           cache: npm
-      - run: npm ci
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        if: needs.changes.outputs.app_changed != 'false'
+        with:
+          path: |
+            .build/sparkle
+            .build/upstream/rhwp
+          key: vendor-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/setup-sparkle.sh', 'scripts/hwp/build.mjs', 'package-lock.json') }}
+      - run: npm ci --no-audit --no-fund
+        if: needs.changes.outputs.app_changed != 'false'
       - run: python3 tests/release/test_release.py
       - run: npm run build
-      - run: npm test
-      - run: bash scripts/test-native.sh
+        if: needs.changes.outputs.app_changed != 'false'
+      - name: Run editor and native checks
+        if: needs.changes.outputs.app_changed != 'false'
+        run: |
+          npm test &
+          editor_pid=$!
+          bash scripts/test-native.sh &
+          native_pid=$!
+          result=0
+          wait "$editor_pid" || result=1
+          wait "$native_pid" || result=1
+          exit "$result"
