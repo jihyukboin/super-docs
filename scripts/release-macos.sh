@@ -69,7 +69,7 @@ mountpoint="$stage/mounted"
 mkdir "$mountpoint"
 hdiutil attach -readonly -nobrowse -mountpoint "$mountpoint" "$dmg"
 codesign --verify --deep --strict --verbose=2 "$mountpoint/Super Docs.app"
-xcrun stapler validate "$mountpoint/Super Docs.app"
+bash scripts/staple.sh "$mountpoint/Super Docs.app" validate
 spctl --assess --type execute --verbose=2 "$mountpoint/Super Docs.app"
 hdiutil detach "$mountpoint"
 mountpoint=""
