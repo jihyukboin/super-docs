@@ -4,10 +4,14 @@ cd "$(dirname "$0")/.."
 
 : "${SIGNING_IDENTITY:?Set SIGNING_IDENTITY to a Developer ID Application identity}"
 : "${NOTARY_PROFILE:?Set NOTARY_PROFILE to a notarytool Keychain profile}"
+: "${SPARKLE_KEY_FILE:?Set SPARKLE_KEY_FILE to the Sparkle EdDSA private key file}"
 
 # Check credentials before rebuilding. Passwords remain in the Keychain.
-xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" --output-format json >/dev/null
+notary_options=(--keychain-profile "$NOTARY_PROFILE")
+if [ -n "${NOTARY_KEYCHAIN:-}" ]; then notary_options+=(--keychain "$NOTARY_KEYCHAIN"); fi
+xcrun notarytool history "${notary_options[@]}" --output-format json >/dev/null
 npm run build
+python3 tests/test-release.py
 npm test
 bash scripts/test-native.sh
 
@@ -23,15 +27,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
-codesign --force --sign "$SIGNING_IDENTITY" --options runtime --timestamp "$app"
-codesign --verify --deep --strict --verbose=2 "$app"
+bash scripts/sign-app.sh "$app" "$SIGNING_IDENTITY"
 codesign -dvv "$app" 2>"$release/app-signature.txt"
 grep -q '^Authority=Developer ID Application:' "$release/app-signature.txt"
 grep -q 'flags=.*runtime' "$release/app-signature.txt"
 
 notarize() {
   local artifact="$1" result="$2"
-  xcrun notarytool submit "$artifact" --keychain-profile "$NOTARY_PROFILE" \
+  xcrun notarytool submit "$artifact" "${notary_options[@]}" \
     --wait --timeout 30m --output-format json >"$result"
   python3 - "$result" <<'PY'
 import json, sys
@@ -77,3 +80,19 @@ mountpoint=""
   shasum -a 256 "$(basename "$dmg")" >"$(basename "$dmg").sha256"
 )
 echo "Ready for distribution: $dmg"
+
+# Keep update archives separate from the pre-stapling notarization ZIP.
+updates="$release/updates"
+mkdir -p "$updates"
+cp "$dmg" "$updates/"
+.build/sparkle/bin/generate_appcast --ed-key-file "$SPARKLE_KEY_FILE" \
+  --download-url-prefix "https://github.com/jihyukboin/super-docs/releases/download/v$version/" \
+  --link https://github.com/jihyukboin/super-docs --maximum-deltas 0 "$updates"
+cp "$updates/appcast.xml" "$release/appcast.xml"
+python3 scripts/verify-appcast.py "$release/appcast.xml" "$dmg" "$version"
+signature=$(python3 - "$release/appcast.xml" <<'PY'
+import sys, xml.etree.ElementTree as ET
+print(ET.parse(sys.argv[1]).find('./channel/item/enclosure').get('{http://www.andymatuschak.org/xml-namespaces/sparkle}edSignature'))
+PY
+)
+.build/sparkle/bin/sign_update --verify --ed-key-file "$SPARKLE_KEY_FILE" "$dmg" "$signature"
