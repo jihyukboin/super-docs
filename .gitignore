@@ -1,0 +1,24 @@
+.build/
+dist/
+node_modules/
+.DS_Store
+
+# Local credentials and signing material
+.env*
+!.env.example
+.npmrc
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+*.log
+
+# Editor and Python caches
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+.venv/

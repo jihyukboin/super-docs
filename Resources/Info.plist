@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleIdentifier</key><string>tech.superdocs.mac</string>
+<key>CFBundleName</key><string>Super Docs</string>
+<key>CFBundleDisplayName</key><string>Super Docs</string>
+<key>CFBundleExecutable</key><string>SuperDocs</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleShortVersionString</key><string>0.1.0</string>
+<key>CFBundleVersion</key><string>1</string>
+<key>LSMinimumSystemVersion</key><string>14.0</string>
+<key>NSHighResolutionCapable</key><true/>
+<key>NSPrincipalClass</key><string>NSApplication</string>
+<key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
+<key>CFBundleDocumentTypes</key><array>
+<dict><key>CFBundleTypeName</key><string>HWP Document</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Alternate</string><key>LSItemContentTypes</key><array><string>tech.superdocs.hwp</string></array></dict>
+<dict><key>CFBundleTypeName</key><string>HWPX Document</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Alternate</string><key>LSItemContentTypes</key><array><string>tech.superdocs.hwpx</string></array></dict>
+</array>
+<key>UTImportedTypeDeclarations</key><array>
+<dict><key>UTTypeIdentifier</key><string>tech.superdocs.hwp</string><key>UTTypeDescription</key><string>HWP Document</string><key>UTTypeConformsTo</key><array><string>public.data</string></array><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>hwp</string></array><key>public.mime-type</key><string>application/x-hwp</string></dict></dict>
+<dict><key>UTTypeIdentifier</key><string>tech.superdocs.hwpx</string><key>UTTypeDescription</key><string>HWPX Document</string><key>UTTypeConformsTo</key><array><string>public.data</string></array><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>hwpx</string></array><key>public.mime-type</key><string>application/hwp+zip</string></dict></dict>
+</array>
+</dict></plist>
