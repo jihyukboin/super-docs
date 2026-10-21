@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import runpy
 import tempfile
+import subprocess
 import unittest
 from unittest.mock import patch
 
@@ -48,6 +49,36 @@ class ReleaseVersionTests(unittest.TestCase):
     def test_invalid_previous_tag_fails_closed(self):
         with self.assertRaises(SystemExit):
             self.run_version(tag='unexpected')
+
+class StaplingTests(unittest.TestCase):
+    def run_staple(self, status):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'xcrun').write_text('''#!/bin/bash
+echo "$*" >> "$STAPLE_TEST_LOG"
+if [ "$2" = staple ]; then
+  count=$(wc -l < "$STAPLE_TEST_LOG")
+  if [ "$count" -lt 3 ]; then exit "$STAPLE_TEST_STATUS"; fi
+fi
+''')
+            (root / 'sleep').write_text('#!/bin/bash\nexit 0\n')
+            for name in ('xcrun', 'sleep'):
+                (root / name).chmod(0o700)
+            env = dict(os.environ, PATH=directory + os.pathsep + os.environ['PATH'],
+                       STAPLE_TEST_LOG=str(root / 'calls'), STAPLE_TEST_STATUS=str(status))
+            script = SCRIPT.parent / 'staple.sh'
+            result = subprocess.run(['bash', str(script), 'Test App.app'], env=env, capture_output=True)
+            return result.returncode, (root / 'calls').read_text().splitlines()
+
+    def test_transient_network_failure_retries_then_validates(self):
+        code, calls = self.run_staple(68)
+        self.assertEqual(code, 0)
+        self.assertEqual(calls, ['stapler staple Test App.app'] * 3 + ['stapler validate Test App.app'])
+
+    def test_permanent_error_is_not_retried(self):
+        code, calls = self.run_staple(77)
+        self.assertEqual(code, 77)
+        self.assertEqual(len(calls), 1)
 
 if __name__ == '__main__':
     unittest.main()
