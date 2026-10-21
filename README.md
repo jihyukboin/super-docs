@@ -1,6 +1,8 @@
 # Super Docs
 
-<a href="https://github.com/jihyukboin/super-docs/releases"><p align="center"><img src="https://raw.githubusercontent.com/jihyukboin/super-docs/main/Resources/icon_256x256.png" width="120" alt="Super Docs"></p></a>
+<p align="center">
+  <a href="https://github.com/jihyukboin/super-docs/releases"><img src="https://raw.githubusercontent.com/jihyukboin/super-docs/main/Resources/icon_256x256.png" width="120" alt="Super Docs"></a>
+</p>
 
 Mac에서 HWP·HWPX 문서를 열고 편집하고 저장하는 무료 오픈소스 앱입니다.
 
