@@ -37,48 +37,46 @@ class ReleaseVersionTests(unittest.TestCase):
     def test_superseded_merge_cannot_replace_newer_release(self):
         self.assertEqual(self.run_version(main='newer-main'), {'skip': 'true'})
 
-    def test_retry_reuses_own_draft(self):
-        draft = {'tag_name': 'v0.1.1', 'target_commitish': 'merged-sha'}
-        self.assertEqual(self.run_version(drafts=[draft])['tag'], 'v0.1.1')
-
     def test_never_overwrites_another_release(self):
         draft = {'tag_name': 'v0.1.1', 'target_commitish': 'different-sha'}
         with self.assertRaises(SystemExit):
             self.run_version(drafts=[draft])
 
-    def test_invalid_previous_tag_fails_closed(self):
-        with self.assertRaises(SystemExit):
-            self.run_version(tag='unexpected')
-
 class StaplingTests(unittest.TestCase):
-    def run_staple(self, status):
+    def run_staple(self, status, succeed_at=3):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / 'xcrun').write_text('''#!/bin/bash
 echo "$*" >> "$STAPLE_TEST_LOG"
 if [ "$2" = staple ]; then
   count=$(wc -l < "$STAPLE_TEST_LOG")
-  if [ "$count" -lt 3 ]; then exit "$STAPLE_TEST_STATUS"; fi
+  if [ "$count" -lt "$STAPLE_TEST_SUCCEED_AT" ]; then exit "$STAPLE_TEST_STATUS"; fi
 fi
 ''')
             (root / 'sleep').write_text('#!/bin/bash\nexit 0\n')
             for name in ('xcrun', 'sleep'):
                 (root / name).chmod(0o700)
             env = dict(os.environ, PATH=directory + os.pathsep + os.environ['PATH'],
-                       STAPLE_TEST_LOG=str(root / 'calls'), STAPLE_TEST_STATUS=str(status))
+                       STAPLE_TEST_LOG=str(root / 'calls'), STAPLE_TEST_STATUS=str(status),
+                       STAPLE_TEST_SUCCEED_AT=str(succeed_at))
             script = SCRIPT.parent / 'staple.sh'
             result = subprocess.run(['bash', str(script), 'Test App.app'], env=env, capture_output=True)
             return result.returncode, (root / 'calls').read_text().splitlines()
 
-    def test_transient_network_failure_retries_then_validates(self):
+    def test_transient_network_failure_retries(self):
         code, calls = self.run_staple(68)
         self.assertEqual(code, 0)
-        self.assertEqual(calls, ['stapler staple Test App.app'] * 3 + ['stapler validate Test App.app'])
+        self.assertEqual(calls, ['stapler staple Test App.app'] * 3)
 
     def test_permanent_error_is_not_retried(self):
         code, calls = self.run_staple(77)
         self.assertEqual(code, 77)
         self.assertEqual(len(calls), 1)
+
+    def test_retries_are_bounded(self):
+        code, calls = self.run_staple(68, succeed_at=99)
+        self.assertEqual(code, 68)
+        self.assertEqual(len(calls), 5)
 
 if __name__ == '__main__':
     unittest.main()

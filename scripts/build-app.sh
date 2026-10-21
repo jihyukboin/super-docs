@@ -8,6 +8,7 @@ app="dist/Super Docs.app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Frameworks"
 swiftc -swift-version 5 -O -target arm64-apple-macos14.0 -framework AppKit -framework WebKit -framework Network -framework UniformTypeIdentifiers -framework CryptoKit -F .build/sparkle -framework Sparkle -Xlinker -rpath -Xlinker '@executable_path/../Frameworks' Sources/SuperDocs/*.swift -o "$app/Contents/MacOS/SuperDocs"
 cp Resources/Info.plist "$app/Contents/Info.plist"
+cp Resources/AppIcon.icns "$app/Contents/Resources/"
 version="${APP_VERSION:-$(node -p "require('./package.json').version")}"
 if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo 'APP_VERSION must be major.minor.patch' >&2; exit 1; fi
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $version" "$app/Contents/Info.plist"
