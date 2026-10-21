@@ -32,11 +32,11 @@ try {
   await page.waitForSelector('.docx-pages img');
   await page.keyboard.type('DOCX edited ');
   await page.waitForFunction(() => window.superDocs.state().dirty);
-  assert.ok((await body()).includes('DOCX edited'));
+  await page.waitForFunction(() => document.querySelector('.docx-pages').textContent.includes('DOCX edited'));
   await page.evaluate(() => window.superDocs.command('edit:undo'));
-  assert.ok(!(await body()).includes('DOCX edited'));
+  await page.waitForFunction(() => !document.querySelector('.docx-pages').textContent.includes('DOCX edited'));
   await page.evaluate(() => window.superDocs.command('edit:redo'));
-  assert.ok((await body()).includes('DOCX edited'));
+  await page.waitForFunction(() => document.querySelector('.docx-pages').textContent.includes('DOCX edited'));
   await page.evaluate(() => {
     const data = new DataTransfer(); data.setData('text/plain', '한글 저장 검증 ');
     document.querySelector('.docx-pages').dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
