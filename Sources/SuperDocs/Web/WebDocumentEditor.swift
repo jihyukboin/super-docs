@@ -87,6 +87,7 @@ final class WebDocumentEditor: NSObject, DocumentEditor, WKScriptMessageHandler,
 
     @MainActor func load(_ bytes: Data, name: String) async throws -> String {
         let result = try await js("return await window.superDocs.load(bytes, name)", ["bytes": bytes.base64EncodedString(), "name": name])
+        if let detail = (result as? [String: Any])?["detail"] as? String { return detail }
         let pages = (result as? [String: Any])?["pages"] as? Int ?? 1
         return "\(pages)쪽"
     }

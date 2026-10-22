@@ -19,7 +19,13 @@ extension SuperDocsApp {
         app.addItem(.separator()); app.addItem(withTitle: "Super Docs 가리기", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         app.addItem(.separator()); app.addItem(withTitle: "Super Docs 종료", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         let file = submenu("파일")
-        item(file, "새 문서", #selector(newDocument), "n"); item(file, "열기…", #selector(openPanel), "o")
+        let newItem = NSMenuItem(title: "새 문서", action: nil, keyEquivalent: "")
+        let newMenu = NSMenu(title: "새 문서"); newItem.submenu = newMenu; file.addItem(newItem)
+        for format in DocumentOpener.formats where !["hwp", "markdown"].contains(format.fileExtension) {
+            let entry = NSMenuItem(title: format.displayName, action: #selector(newDocument), keyEquivalent: format.fileExtension == "hwpx" ? "n" : "")
+            entry.target = self; entry.representedObject = format.fileExtension; newMenu.addItem(entry)
+        }
+        item(file, "열기…", #selector(openPanel), "o")
         file.addItem(.separator()); item(file, "저장", #selector(saveDocument), "s"); item(file, "다른 이름으로 저장…", #selector(saveAsDocument), "s", shift: true)
         file.addItem(.separator()); file.addItem(withTitle: "창 닫기", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         let edit = submenu("편집")

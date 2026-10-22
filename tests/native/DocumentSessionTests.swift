@@ -34,7 +34,7 @@ precondition(session.fileURL == copy)
 let preserved = try Data(contentsOf: target)
 precondition(preserved == original)
 
-for (bytes, destination) in [(Data(), copy), (edited, root.appendingPathComponent("missing/fail.hwpx"))] {
+for (bytes, destination) in [(edited, root.appendingPathComponent("missing/fail.hwpx"))] {
     do {
         try session.write(bytes, to: destination)
         fatalError("Invalid writes must fail")
@@ -47,3 +47,8 @@ precondition(untitled.fileURL == nil && !untitled.dirty)
 try untitled.write(edited, to: root.appendingPathComponent("new.hwpx"))
 precondition(untitled.fileURL != nil)
 print("PASS: document persistence, external-change protection, Save As and failed-save state")
+
+let empty = root.appendingPathComponent("empty.txt")
+try session.write(Data(), to: empty)
+let emptyBytes = try Data(contentsOf: empty)
+precondition(emptyBytes.isEmpty)

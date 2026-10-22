@@ -27,7 +27,6 @@ final class DocumentSession {
     }
 
     func write(_ bytes: Data, to target: URL) throws {
-        guard !bytes.isEmpty else { throw AppError.message("저장 데이터를 만들지 못했습니다.") }
         try bytes.write(to: target, options: .atomic)
         fileURL = target
         diskHash = Data(SHA256.hash(data: bytes))

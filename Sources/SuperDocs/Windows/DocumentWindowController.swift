@@ -24,7 +24,7 @@ final class DocumentWindowController: NSWindowController, NSWindowDelegate {
         self.editor = editor
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1220, height: 860), styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         super.init(window: window)
-        if !editor.saveFormats.isEmpty { window.appearance = NSAppearance(named: .darkAqua) }
+        if editor is WebDocumentEditor { window.appearance = NSAppearance(named: .darkAqua) }
         window.delegate = self; window.minSize = NSSize(width: 820, height: 560)
         window.title = fileURL?.lastPathComponent ?? "제목 없음"
         window.representedURL = fileURL; window.center(); window.setFrameAutosaveName("SuperDocsEditor")
