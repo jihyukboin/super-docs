@@ -7,16 +7,23 @@
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
     "build": "bash scripts/build-app.sh",
-    "test": "node tests/hwp/engine.test.mjs && node tests/hwp/editor.test.mjs && node tests/docx/editor.test.mjs",
+    "test": "node tests/hwp/engine.test.mjs && node tests/hwp/editor.test.mjs && node tests/docx/editor.test.mjs && node tests/office/editor.test.mjs && python3 tests/office/verify-files.py",
     "test:engine": "node tests/hwp/engine.test.mjs",
     "test:editor": "node tests/hwp/editor.test.mjs",
-    "test:docx": "node tests/docx/editor.test.mjs"
+    "test:docx": "node tests/docx/editor.test.mjs",
+    "test:office": "node tests/office/editor.test.mjs && python3 tests/office/verify-files.py"
   },
   "dependencies": {
+    "@betteroffice/pptx": "0.2.0",
+    "@betteroffice/pptx-react": "0.2.0",
+    "@betteroffice/xlsx": "0.3.0",
+    "@betteroffice/xlsx-react": "0.3.0",
     "@docx-editor.dev/core": "2.32.0",
     "@docx-editor.dev/fonts": "2.32.0",
     "@docx-editor.dev/react": "2.32.0",
     "@rhwp/core": "0.8.7",
+    "dompurify": "3.4.17",
+    "marked": "18.1.1",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
