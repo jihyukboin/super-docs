@@ -69,7 +69,13 @@ final class PDFEditor: NSObject, DocumentEditor, NSSearchFieldDelegate {
         guard let document = PDFDocument(data: bytes) else { throw AppError.message("올바른 PDF 문서가 아닙니다.") }
         guard !document.isLocked else { throw AppError.message("암호로 잠긴 PDF는 지원하지 않습니다. 잠금을 해제한 후 다시 열어 주세요.") }
         guard document.pageCount > 0 else { throw AppError.message("PDF에 표시할 페이지가 없습니다.") }
+        view.layoutSubtreeIfNeeded()
         pdfView.document = document
+        pdfView.layoutDocumentView()
+        if let first = document.page(at: 0) {
+            let bounds = first.bounds(for: .cropBox)
+            pdfView.go(to: PDFDestination(page: first, at: NSPoint(x: bounds.minX, y: bounds.maxY)))
+        }
         history.removeAllActions()
         updatePage()
         return "\(document.pageCount)페이지"
