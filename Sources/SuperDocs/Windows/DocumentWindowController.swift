@@ -5,6 +5,8 @@ final class DocumentWindowController: NSWindowController, NSWindowDelegate {
     private let session: DocumentSession
     private let editor: DocumentEditor
     var fileURL: URL? { session.fileURL }
+    var canSave: Bool { ready && !saving && !editor.saveFormats.isEmpty }
+    var isReadOnly: Bool { editor.saveFormats.isEmpty }
     var dirty: Bool { session.dirty }
     private var ready = false
     private var saving = false
@@ -22,7 +24,7 @@ final class DocumentWindowController: NSWindowController, NSWindowDelegate {
         self.editor = editor
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1220, height: 860), styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         super.init(window: window)
-        window.appearance = NSAppearance(named: .darkAqua)
+        if !editor.saveFormats.isEmpty { window.appearance = NSAppearance(named: .darkAqua) }
         window.delegate = self; window.minSize = NSSize(width: 820, height: 560)
         window.title = fileURL?.lastPathComponent ?? "제목 없음"
         window.representedURL = fileURL; window.center(); window.setFrameAutosaveName("SuperDocsEditor")
@@ -51,7 +53,7 @@ final class DocumentWindowController: NSWindowController, NSWindowDelegate {
                 let detail = try await editor.load(session.initialBytes, name: fileURL?.lastPathComponent ?? "제목 없음." + editor.defaultFormat.fileExtension)
                 ready = true
                 session.didLoad()
-                statusText = "\(formatName.uppercased()) · \(detail) · 저장됨"
+                statusText = "\(formatName.uppercased()) · \(detail) · \(isReadOnly ? "읽기 전용" : "저장됨")"
                 window?.makeFirstResponder(editor.view)
             } catch { statusText = "문서를 열지 못했습니다"; app.showError(error) }
         }
@@ -66,7 +68,7 @@ final class DocumentWindowController: NSWindowController, NSWindowDelegate {
     }
 
     @MainActor func save(asNew: Bool = false) async -> Bool {
-        guard ready, !saving else { return false }
+        guard canSave else { return false }
         saving = true
         defer { saving = false }
         var destination = fileURL

@@ -1,7 +1,7 @@
 import AppKit
 import Sparkle
 
-final class SuperDocsApp: NSObject, NSApplicationDelegate {
+final class SuperDocsApp: NSObject, NSApplicationDelegate, NSMenuItemValidation {
     var server: AssetServer!
     var documents: [DocumentWindowController] = []
     var terminating = false
@@ -70,8 +70,20 @@ final class SuperDocsApp: NSObject, NSApplicationDelegate {
         }
         current?.command(id)
     }
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if menuItem.action == #selector(saveDocument) || menuItem.action == #selector(saveAsDocument) {
+            return current?.canSave == true
+        }
+        if menuItem.action == #selector(runEditorCommand) {
+            guard let current else { return false }
+            if current.isReadOnly, let id = menuItem.representedObject as? String {
+                return ["edit:find", "edit:select-all", "edit:copy"].contains(id)
+            }
+        }
+        return true
+    }
     @objc func about(_ sender: Any?) {
-        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Super Docs", .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "", .credits: NSAttributedString(string: "HWP · HWPX · DOCX 문서 편집기\nRHWP 0.8.7 (MIT) · DOCX Editor 2.32.0 (Apache-2.0)\n본 제품은 한글 문서 파일 공개 문서를 참고한 독립적인 앱입니다.")])
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Super Docs", .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "", .credits: NSAttributedString(string: "HWP · HWPX · DOCX 문서 편집기 · PDF 뷰어\nRHWP 0.8.7 (MIT) · DOCX Editor 2.32.0 (Apache-2.0)\n본 제품은 한글 문서 파일 공개 문서를 참고한 독립적인 앱입니다.")])
     }
     @objc func licenses(_ sender: Any?) {
         if let url = Bundle.main.url(forResource: "THIRD_PARTY_NOTICES", withExtension: "txt") { NSWorkspace.shared.open(url) }
