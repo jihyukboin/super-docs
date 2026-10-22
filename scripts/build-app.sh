@@ -8,7 +8,7 @@ app="dist/Super Docs.app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Frameworks"
 sources=()
 while IFS= read -r source; do sources+=("$source"); done < <(find Sources/SuperDocs -name '*.swift' -type f | sort)
-swiftc -swift-version 5 -O -target arm64-apple-macos14.0 -framework AppKit -framework WebKit -framework Network -framework UniformTypeIdentifiers -framework CryptoKit -F .build/sparkle -framework Sparkle -Xlinker -rpath -Xlinker '@executable_path/../Frameworks' "${sources[@]}" -o "$app/Contents/MacOS/SuperDocs"
+swiftc -swift-version 5 -O -target arm64-apple-macos14.0 -framework PDFKit -framework AppKit -framework WebKit -framework Network -framework UniformTypeIdentifiers -framework CryptoKit -F .build/sparkle -framework Sparkle -Xlinker -rpath -Xlinker '@executable_path/../Frameworks' "${sources[@]}" -o "$app/Contents/MacOS/SuperDocs"
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/AppIcon.icns "$app/Contents/Resources/"
 version="${APP_VERSION:-$(node -p "require('./package.json').version")}"
